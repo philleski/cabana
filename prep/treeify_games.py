@@ -7,6 +7,10 @@ pgn_glob = 'KingBase/KingBase-*.pgn'
 pgn_files = glob.glob(pgn_glob)
 
 output_dir = 'games'
+try:
+    os.stat(output_dir)
+except OSError:
+    os.mkdir(output_dir)
 for filename in glob.glob(output_dir + '/*'):
     os.remove(filename)
 output_files = {}
