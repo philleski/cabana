@@ -3,7 +3,7 @@
 import glob
 import os
 
-pgn_glob = 'KingBase/KingBase-*.pgn'
+pgn_glob = 'KingBase/KingBase*.pgn'
 pgn_files = glob.glob(pgn_glob)
 
 output_dir = 'games'
