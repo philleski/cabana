@@ -6,11 +6,11 @@ This is a site where you can practice chess openings. You select an opening from
 
 First download the latest version of KingBase in PGN ZIP format here: http://www.kingbase-chess.net/
 
-In prep/treeify_games.py, modify the pgn_glob variable to point to your unzipped KingBase directory. Then run prep/treeify_games.py. If successful it should generate a games/ directory.
+Unzip the file and rename the folder as KingBase/ in the project directory. Then run prep/treeify_games.py. If successful it should generate a games/ directory.
 
 Next download the opening name PGN file from here: http://www.chessfiles.com/download-openings.html
 
-Copy the file ecoe.pgn to the project directory (the same directory as this readme file) and run prep/build_openings.py. If successful it should generate an openings.json file.
+Copy the file ecoe.pgn to the project directory and run prep/build_openings.py. If successful it should generate an openings.json file.
 
 ## Running
 
