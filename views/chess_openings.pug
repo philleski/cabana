@@ -1,0 +1,386 @@
+html
+	head
+		link(rel="stylesheet", href="css/chessboard-0.3.0.min.css", type="text/css")
+		link(rel="stylesheet", href="css/bootstrap.min.css", type="text/css")
+		link(rel="stylesheet", href="css/select2.min.css", type="text/css")
+		
+		style(type="text/css").
+			div.well {
+				background-color: #ddd;
+			}
+		
+		title Openings Practice
+	body
+		div.row(style="padding: 25px; width: 1295px;")
+			div.col-md-8
+				div#board(style="width: 800px;")
+			div.col-md-4
+				div.well
+					span(style="display: inline-block; min-height: 38px;")
+						h4#opening-name
+				div.well#move-table-container(style="height: 400px; min-height: 400px; overflow-y: scroll;")
+					table.table.table-striped#move-table(style="background-color: #eee; margin: 0px;")
+				div.well
+					span(style="display: inline-block; margin-right: 10px;")
+						a.btn#best-move-button
+							h4 Best Move
+					span(style="display: inline-block; position: relative; top: 3px;")
+						h4#best-move-text
+				div.well
+					div.row
+						div.col-md-4
+							a.btn#opening-button(tabindex="0", data-toggle="popover", data-placement="bottom", data-content="<input id='opening'></input>")
+								h4 Opening
+						div.col-md-4
+							a.btn#flip-board-button
+								h4 Flip Board
+						div.col-md-4
+							a.btn#replay-line-button
+								h4 Replay
+
+	
+		script(type="text/javascript" src="js/json3.min.js")
+		script(type="text/javascript" src="js/jquery-1.10.1.min.js")
+		script(type="text/javascript" src="js/prettify.js")
+		script(type="text/javascript" src="js/chessboard-0.3.0.min.js")
+		script(type="text/javascript" src="js/chess.js")
+		script(type="text/javascript" src="js/bootstrap.min.js")
+		script(type="text/javascript" src="js/select2.full.min.js")
+	
+		script(type="text/javascript").
+			$(document).ready(function() {
+				var metadata = !{JSON.stringify(metadata)};
+				var openings = !{JSON.stringify(openings)};
+
+				var currentColor = 'white';
+				var currentOpening = openings[0];   // Starting position
+				var lineToReplay = null;
+				
+				for(var i = 0; i < openings.length; i++) {
+					openings[i].id = i;
+					openings[i].text = openings[i].name;
+				}
+
+				var onDrop = function(source, target, piece, newPos, oldPos, orientation) {
+					if(target == 'offboard') {
+						return;
+					}
+					var oldFen = ChessBoard.objToFen(oldPos);
+					var newFen = ChessBoard.objToFen(newPos);
+					var oldFenExpanded = oldFen.replace(/1/g, '_').replace(/2/g, '__').replace(/3/g, '___').replace(/4/g, '____')
+						.replace(/5/g, '_____').replace(/6/g, '______').replace(/7/g, '_______').replace(/8/g, '________');
+					if(source == 'e1' && target == 'g1' && piece == 'wK') {
+						var castle = new Chess(chess.fen());
+						castle.move('O-O');
+						newFen = castle.fen();
+						board.move('h1-f1');
+					} else if(source == 'e1' && target == 'c1' && piece == 'wK') {
+						var castle = new Chess(chess.fen());
+						castle.move('O-O-O');
+						newFen = castle.fen();
+						board.move('a1-d1');
+					} else if(source == 'e8' && target == 'g8' && piece == 'bK') {
+						var castle = new Chess(chess.fen());
+						castle.move('O-O');
+						newFen = castle.fen();
+						board.move('h8-f8');
+					} else if(source == 'e8' && target == 'c8' && piece == 'bK') {
+						var castle = new Chess(chess.fen());
+						castle.move('O-O-O');
+						newFen = castle.fen();
+						board.move('a8-d8');
+					} else if((piece === 'wP' && target.charAt(1) === '6') || (piece === 'bP' && target.charAt(1) === '3')) {
+						var enPassantTargetRow = oldFenExpanded.split('/')[currentColor === 'white' ? 2 : 5];
+						var column = target.charCodeAt(0) - 'a'.charCodeAt(0);
+						if(enPassantTargetRow.charAt(column) === '_') {
+							var enPassantBackRowNum = currentColor === 'white' ? 3 : 4;
+							var newFenExpanded = newFen.replace(/1/g, '_').replace(/2/g, '__').replace(/3/g, '___').replace(/4/g, '____')
+								.replace(/5/g, '_____').replace(/6/g, '______').replace(/7/g, '_______').replace(/8/g, '________');
+							var newFenExpandedParts = newFenExpanded.split('/');
+							newFenExpandedParts[enPassantBackRowNum] = newFenExpandedParts[enPassantBackRowNum].substr(0, column) + '_' + newFenExpandedParts[enPassantBackRowNum].substr(column + 1);
+							newFenExpanded = newFenExpandedParts.join('/');
+							newFen = newFenExpanded.replace(/________/g, '8').replace(/_______/g, '7').replace(/______/g, '6').replace(/_____/g, '5')
+								.replace(/____/g, '4').replace(/___/g, '3').replace(/__/g, '2').replace(/_/g, '1');
+							board.position(newFen, false);
+						}
+					}
+					var move = getMove(chess, newFen);
+					getNextMoves(chess, function(err, nextMoves) {
+						if(err) {
+							alert('Could not get next moves: ' + err);
+							return;
+						}
+						if(move === null || move != nextMoves[0].move) {
+							setTimeout(function() {
+								board.position(ChessBoard.objToFen(oldPos));
+							}, 100);
+							return;
+						}
+						chess.move(move);
+						updateDisplay();
+						getNextMoves(chess, function(err, nextMoves) {
+							if(err) {
+								alert('Could not get next moves: ' + err);
+								return;
+							}
+							if(orientation.substr(0, 1) != chess.turn()) {
+								setTimeout(function() {
+									computerMove(nextMoves);
+								}, 100);
+							}
+						});
+					});
+				};
+
+				var board = null;
+				var chess = null;
+
+				var clear = function() {
+					var config = {
+						draggable: true,
+						dropOffBoard: 'snapback',
+						onDrop: onDrop,
+						position: 'start'
+					};
+					board = ChessBoard('board', config);
+					chess = new Chess();
+				};
+				clear();
+
+				var getNextMoves = window.getNextMoves = function(chessObj, callback) {
+					var history = chessObj
+						.history()
+						.map(function(move) {
+							return move.replace(/\+/, '');
+						});
+					$.ajax({
+						url: '/next_move/' + history.join('_'),
+						type: 'GET',
+						success: function(data) {
+							return callback(null, data);
+						}
+					});
+				};
+
+				var flipBoard = function() {
+					board.flip();
+					getNextMoves(chess, function(err, nextMoves) {
+						if(err) {
+							alert('Could not get next moves: ' + err);
+							return;
+						}
+						setTimeout(function() {
+							computerMove(nextMoves);
+						}, 300);
+					});
+					currentColor = (currentColor === 'white') ? 'black' : 'white';
+					localStorage.setItem('color', currentColor);
+				};
+				
+				window.getOpeningName = function() {
+					var history = chess.history();
+					var longestSubsetName = null;
+					var longestSubsetLength = 0;
+					openings.forEach(function(opening) {
+						if(history.length < opening.moves.length) {
+							return;
+						}
+						var subset = true;
+						for(var i = 0; i < opening.moves.length; i++) {
+							if(history[i] !== opening.moves[i]) {
+								subset = false;
+								break;
+							}
+						}
+						if(subset && opening.moves.length > longestSubsetLength) {
+							longestSubsetName = opening.name;
+							longestSubsetLength = opening.moves.length;
+						}
+					});
+					return longestSubsetName;
+				};
+
+				var updateDisplay = function() {
+					var moveTableHTML = '';
+					var history = chess.history();
+					for(var i = 0; i < history.length; i++) {
+						if(i % 2 === 0) {
+							moveTableHTML += '<tr>';
+							moveTableHTML += ('<td>' + (1 + parseInt(i / 2)) + '</td>')
+						}
+						moveTableHTML += ('<td>' + history[i] + '</td>');
+						if(i % 2 === 1) {
+							moveTableHTML += '</tr>';
+						}
+					}
+					$('#opening-name').html(getOpeningName());
+					$('#move-table').html(moveTableHTML);
+					$('#move-table-container').scrollTop($('#move-table-container')[0].scrollHeight);
+					$('#best-move-text').html('');
+				};
+
+				var moveOnBoard = function(moveResult, moveName) {
+					board.move(moveResult.from + '-' + moveResult.to);
+					// Note the turn switched.
+					if(moveName === 'O-O' && chess.turn() === 'b') {
+						board.move('h1-f1');
+					}
+					else if(moveName === 'O-O-O' && chess.turn() === 'b') {
+						board.move('a1-d1');
+					}
+					else if(moveName === 'O-O' && chess.turn() === 'w') {
+						board.move('h8-f8');
+					}
+					else if(moveName === 'O-O-O' && chess.turn() === 'w') {
+						board.move('a8-d8');
+					}
+					if(moveResult.flags.indexOf('e') !== -1) {
+						// En passant
+						var enPassantBackRowNum = (currentColor.substr(0, 1) === chess.turn()) ? 4 : 3;
+						var column = moveResult.to.charCodeAt(0) - 'a'.charCodeAt(0);
+						var fenExpanded = board.fen().replace(/1/g, '_').replace(/2/g, '__').replace(/3/g, '___').replace(/4/g, '____')
+							.replace(/5/g, '_____').replace(/6/g, '______').replace(/7/g, '_______').replace(/8/g, '________');
+						var fenExpandedParts = fenExpanded.split('/');
+						console.log(fenExpandedParts);
+						fenExpandedParts[enPassantBackRowNum] = fenExpandedParts[enPassantBackRowNum].substr(0, column) + '_' + fenExpandedParts[enPassantBackRowNum].substr(column + 1);
+						fenExpanded = fenExpandedParts.join('/');
+						newFen = fenExpanded.replace(/________/g, '8').replace(/_______/g, '7').replace(/______/g, '6').replace(/_____/g, '5')
+							.replace(/____/g, '4').replace(/___/g, '3').replace(/__/g, '2').replace(/_/g, '1');
+						board.position(newFen, false);
+					}
+				}
+
+				var playOpening = function(openingName) {
+					openings.forEach(function(opening) {
+						if(openingName === opening.name) {
+							currentOpening = opening;
+						}
+					});
+
+					clear();
+
+					if(localStorage.getItem('color') === 'black') {
+						currentColor = 'black';
+						board.flip();
+					}
+
+					currentOpening.moves.forEach(function(move) {
+						var moveResult = chess.move(move);
+						updateDisplay();
+						moveOnBoard(moveResult, move);
+					});
+					var colorParity = currentColor === 'white' ? 0 : 1;
+					if(currentOpening.moves.length % 2 !== colorParity) {
+						getNextMoves(chess, function(err, nextMoves) {
+							if(err) {
+								alert('Could not get next moves: ' + err);
+								return;
+							}
+							setTimeout(function() {
+								computerMove(nextMoves);
+							}, 300);
+						});
+					}
+					localStorage.setItem('opening', openingName);
+				};
+				
+				var localStorageOpening = localStorage.getItem('opening');
+				if(localStorageOpening) {
+					playOpening(localStorageOpening);
+				}
+				
+				var getMove = function(chessObj, newFen) {
+					var fen = chessObj.fen();
+					var foundMove = null;
+					chessObj.moves().forEach(function(move) {
+						var chessObjNew = new Chess(fen);
+						chessObjNew.move(move);
+						// newFen is not complete, it's only the board position.
+						if(chessObjNew.fen().indexOf(newFen) === 0) {
+							foundMove = move;
+						}
+					});
+					if(foundMove === null) {
+						return null;
+					}
+					return foundMove.replace(/\+/, '');
+				};
+
+				var computerMove = function(nextMoves) {
+					var nextMove = null;
+					if(lineToReplay && chess.history().length < lineToReplay.length) {
+						nextMove = lineToReplay[chess.history().length];
+					} else {
+						// Play more mainline as the opening progresses.
+						if(chess.history().length - currentOpening.moves.length > 1) {
+							nextMoves = nextMoves.slice(0, 3);
+						}
+						if(chess.history().length - currentOpening.moves.length > 7) {
+							nextMoves = [nextMoves[0]];
+						}
+						var totalCount = 0;
+						nextMoves.forEach(function(move) {
+							totalCount += parseInt(move.count);
+						});
+						var countLimit = Math.random() * totalCount;
+						var runningCount = 0;
+						nextMoves.forEach(function(move) {
+							if(runningCount <= countLimit) {
+								nextMove = move.move;
+							}
+							runningCount += parseInt(move.count);
+						});
+					}
+					var moveResult = chess.move(nextMove);
+					updateDisplay();
+					moveOnBoard(moveResult, nextMove);
+				};
+				
+				$('#best-move-button').click(function() {
+					if($('#best-move-text').html()) {
+						$('#best-move-text').html('');
+						return;
+					}
+					getNextMoves(chess, function(err, nextMoves) {
+						if(err) {
+							$('#best-move-text').html('');
+							return;
+						}
+						$('#best-move-text').html(nextMoves[0].move);
+					});
+				});
+				
+				$('#opening-button')
+				.popover({
+					html: true
+				})
+				.on('shown.bs.popover', function() {
+					$('#opening')
+					.select2({
+						data: openings,
+						minimumInputLength: 2
+					})
+					.select2('open')
+					.on('select2:select', function() {
+						var index = $('#opening').val();
+						var openingName = openings[index].name;
+						
+						$('#opening-button').popover('hide');
+						
+						// After hiding we need to click on the popover twice to activate it. The solution from here seems to work:
+						// https://stackoverflow.com/questions/32581987/need-click-twice-after-hide-a-shown-bootstrap-popover
+						$('#opening-button').on('hidden.bs.popover', function(e) {
+							$(e.target).data("bs.popover").inState.click = false;
+						});
+						
+						playOpening(openingName);
+					});
+				});
+				
+				$('#flip-board-button').click(flipBoard);
+				$('#replay-line-button').click(function() {
+					lineToReplay = chess.history();
+					clear();
+					playOpening(currentOpening.name);
+				});
+			});
