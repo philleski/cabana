@@ -1,50 +1,78 @@
 html
 	head
 		link(rel="stylesheet", href="css/chessboard-0.3.0.min.css", type="text/css")
-		link(rel="stylesheet", href="css/bootstrap.min.css", type="text/css")
+		link(rel="stylesheet", href="css/bootstrap.css", type="text/css")
 		link(rel="stylesheet", href="css/select2.min.css", type="text/css")
 		
 		style(type="text/css").
 			div.well {
 				background-color: #ddd;
+				padding: 10px;
+			}
+			a {
+				color: inherit;
 			}
 		
 		title Cabana Chess
 	body
-		div.row(style="padding: 25px; width: 1295px;")
+		nav.navbar.navbar-inverse(style="background-color: #ddd; border: 0px;")
+			div.container-fluid(style="margin-left: 10px;")
+				div.navbar-header
+					a.navbar-brand(href="/") Cabana
+				div.collapse.navbar-collapse
+					ul.nav.navbar-nav
+						li
+							a.btn#opening-button(data-toggle="modal", href="#opening-modal") Opening
+						li
+							a.btn(data-toggle="modal", href="#tutorial-modal") Tutorial
+		div.row(style="padding-left: 25px; width: 960px;")
 			div.col-md-8
-				div#board(style="width: 800px;")
+				div#board(style="width: 600px;")
 			div.col-md-4
-				div.well
-					span(style="display: inline-block; min-height: 38px;")
-						h4#opening-name
-				div.well#move-table-container(style="height: 400px; min-height: 400px; overflow-y: scroll;")
+				div.well#move-table-container(style="height: 596px; min-height: 596px; margin: 0px; overflow-y: scroll;")
 					table.table.table-striped#move-table(style="background-color: #eee; margin: 0px;")
-				div.well
-					span(style="display: inline-block; margin-right: 10px;")
-						a.btn#best-move-button
-							h4 Best Move
-					span(style="display: inline-block; position: relative; top: 3px;")
-						h4#best-move-text
-				div.well
-					div.row
-						div.col-md-4
-							a.btn#opening-button(tabindex="0", data-toggle="popover", data-placement="bottom", data-content="<input id='opening'></input>")
-								h4 Opening
-						div.col-md-4
-							a.btn#flip-board-button
-								h4 Flip Board
-						div.col-md-4
-							a.btn#replay-line-button
-								h4 Replay
-
+		table(style="margin-left: 25px; width: 600px; min-height: 40px;")
+			tr
+				td(style="width: 500px;")
+					h4#opening-name
+				td(style="width: 100px;")
+					a.btn.pull-right#flip-board-button(data-toggle="tooltip", title="Flip Board", style="padding: 0px 3px 0px 3px; margin-top: -6px;")
+						i.glyphicon.glyphicon-retweet
+					a.btn.pull-right#replay-line-button(data-toggle="tooltip", title="Replay Line", style="padding: 0px 3px 0px 3px; margin-top: -6px;")
+						i.glyphicon.glyphicon-repeat
+					a.btn.pull-right#best-move-button(data-toggle="tooltip", title="Best Move", style="padding: 0px 3px 0px 3px; margin-top: -6px;")
+						i.glyphicon.glyphicon-eye-open
+						
+		div.modal.fade#opening-modal(role="dialog", aria-hidden="true")
+			div.modal-dialog
+				div.modal-content
+					div.modal-header
+						button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+						h4.modal-title Choose an Opening ...
+					div.modal-body(style="height: 350px;")
+						input#opening-selector(style="width: 100%;")
+					div.modal-footer
+						button.btn.btn-default.pull-left(type="button", data-dismiss="modal") Cancel
+						button.btn.btn-primary.pull-right#opening-choose(type="button") Choose Opening
+						
+		div.modal.fade#tutorial-modal(role="dialog", aria-hidden="true")
+			div.modal-dialog
+				div.modal-content
+					div.modal-header
+						button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
+						h4.modal-title Cabana Tutorial
+					div.modal-body
+						p Welcome to Cabana! This site helps you practice your chess openings. It helps improve your memory by checking that you play the mainline variation at each move. If you do not play the mainline your move will be taken back and you can try again! You can always peek at the next move if you get stuck. The computer will select responses at random at the beginning of the opening and shift to more mainline responses as the game progresses.
+						p To get started, click on the Opening button at the top of the page to select your opening. Once you do, the first few moves will be played on the board. Then it is your turn to make the next mainline move.
+						p Below the bottom-right square you have the options to peek at the best move, to flip the board, and to replay the line. By replaying the line you ensure the computer will make the same moves, making it easier to commit the variation you're on into memory. If you want the same opening but to have the computer choose different responses, you can simply refresh the page.
+						p Sit back, relax, and enjoy your openings!
 	
 		script(type="text/javascript" src="js/json3.min.js")
 		script(type="text/javascript" src="js/jquery-1.10.1.min.js")
 		script(type="text/javascript" src="js/prettify.js")
 		script(type="text/javascript" src="js/chessboard-0.3.0.min.js")
 		script(type="text/javascript" src="js/chess.js")
-		script(type="text/javascript" src="js/bootstrap.min.js")
+		script(type="text/javascript" src="js/bootstrap.js")
 		script(type="text/javascript" src="js/select2.full.min.js")
 	
 		script(type="text/javascript").
@@ -216,7 +244,6 @@ html
 					$('#opening-name').html(getOpeningName());
 					$('#move-table').html(moveTableHTML);
 					$('#move-table-container').scrollTop($('#move-table-container')[0].scrollHeight);
-					$('#best-move-text').html('');
 				};
 
 				var moveOnBoard = function(moveResult, moveName) {
@@ -336,46 +363,42 @@ html
 					moveOnBoard(moveResult, nextMove);
 				};
 				
-				$('#best-move-button').click(function() {
-					if($('#best-move-text').html()) {
-						$('#best-move-text').html('');
-						return;
-					}
+				$('#best-move-button').click(function(e) {
 					getNextMoves(chess, function(err, nextMoves) {
 						if(err) {
-							$('#best-move-text').html('');
 							return;
 						}
-						$('#best-move-text').html(nextMoves[0].move);
+						var $target = $(e.currentTarget);
+						$target
+							.attr('title', 'Best Move ... ' + nextMoves[0].move)
+							.tooltip('fixTitle')
+							.tooltip('show')
+							.on('hidden.bs.tooltip', function() {
+								$target
+									.attr('title', 'Best Move')
+									.tooltip('fixTitle');
+							});
 					});
 				});
-				
-				$('#opening-button')
-				.popover({
-					html: true
-				})
-				.on('shown.bs.popover', function() {
-					$('#opening')
-					.select2({
-						data: openings,
-						minimumInputLength: 2
-					})
-					.select2('open')
-					.on('select2:select', function() {
-						var index = $('#opening').val();
-						var openingName = openings[index].name;
-						
-						$('#opening-button').popover('hide');
-						
-						// After hiding we need to click on the popover twice to activate it. The solution from here seems to work:
-						// https://stackoverflow.com/questions/32581987/need-click-twice-after-hide-a-shown-bootstrap-popover
-						$('#opening-button').on('hidden.bs.popover', function(e) {
-							$(e.target).data("bs.popover").inState.click = false;
+
+				$('#opening-selector').select2({
+					data: openings,
+					minimumInputLength: 2
+				});
+				$('#opening-modal').on('shown.bs.modal', function() {
+					var openingName = null;
+					$('#opening-selector')
+						.select2('open')
+						.on('select2:select', function(e) {
+							openingName = e.params.data.text;
 						});
-						
+					$('#opening-choose').click(function() {
+						$('#opening-modal').modal('hide');
 						playOpening(openingName);
 					});
 				});
+				
+				$('[data-toggle="tooltip"]').tooltip();
 				
 				$('#flip-board-button').click(flipBoard);
 				$('#replay-line-button').click(function() {
