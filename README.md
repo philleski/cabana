@@ -1,6 +1,6 @@
 # Cabana
 
-This is a site where you can practice chess openings. You select an opening from the list and then attempt to play it on the board. You are supposed to always respond with the most commonly played continuation. If you do not the move will be taken back and you try again.
+This is a site where you can practice chess openings. You select an opening from the list and then attempt to play it on the board. You are supposed to always respond with the most commonly played continuation. If you do not the move will be taken back and you try again. See the site here: http://cabanachess.com/
 
 ## Prep
 
