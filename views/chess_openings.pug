@@ -12,6 +12,9 @@ html
 			a {
 				color: inherit;
 			}
+			.tooltip-inner {
+				font-size: 16px;
+			}
 		
 		title Cabana Chess
 	body
@@ -35,13 +38,13 @@ html
 			tr
 				td(style="width: 500px;")
 					h4#opening-name
-				td(style="width: 100px;")
-					a.btn.pull-right#flip-board-button(data-toggle="tooltip", title="Flip Board", style="padding: 0px 3px 0px 3px; margin-top: -6px;")
-						i.glyphicon.glyphicon-retweet
-					a.btn.pull-right#replay-line-button(data-toggle="tooltip", title="Replay Line", style="padding: 0px 3px 0px 3px; margin-top: -6px;")
-						i.glyphicon.glyphicon-repeat
-					a.btn.pull-right#best-move-button(data-toggle="tooltip", title="Best Move", style="padding: 0px 3px 0px 3px; margin-top: -6px;")
-						i.glyphicon.glyphicon-eye-open
+				td(style="width: 150px;")
+					a.btn.pull-right#flip-board-button(data-toggle="tooltip", title="Flip Board", style="padding-top: 0px; padding-right: 3px;")
+						i.glyphicon.glyphicon-retweet.btn-lg(style="padding: 0px;")
+					a.btn.pull-right#replay-line-button(data-toggle="tooltip", title="Replay Line", style="padding-top: 0px;")
+						i.glyphicon.glyphicon-repeat.btn-lg(style="padding: 0px;")
+					a.btn.pull-right#best-move-button(data-toggle="tooltip", title="Best Move", style="padding-top: 0px;")
+						i.glyphicon.glyphicon-eye-open.btn-lg(style="padding: 0px;")
 						
 		div.modal.fade#opening-modal(role="dialog", aria-hidden="true")
 			div.modal-dialog
