@@ -15,36 +15,101 @@ html
 			.tooltip-inner {
 				font-size: 16px;
 			}
+			
+			.fullwidth {
+				width: 960px;
+			}
+			.fullwidth.row {
+				padding-left: 25px;
+			}
+			
+			.boardwidth {
+				width: 600px;
+			}
+			table.boardwidth {
+				margin-left: 25px;
+				min-height: 40px;
+			}
+			table.boardwidth tr td:first-child {
+				width: 450px;
+			}
+			table.boardwidth tr td:second-child {
+				width: 150px;
+			}
+			
+			#move-table-container {
+				height: 596px;
+				min-height: 596px;
+				max-width: 596px;
+				border: 0px;
+				margin: 0px;
+				overflow-y: scroll;
+			}
+			
+			#move-table {
+				background-color: #eee;
+				margin: 0px;
+			}
+			
+			nav.navbar.navbar-inverse {
+				background-color: #ddd;
+				border: 0px;
+			}
+			.navbar-inner {
+				float: none;
+				width: 960px;
+				margin: 0 auto;
+			}
+			.navbar-brand {
+				margin-left: 10px;
+				padding-left: 0px;
+			}
+			
+			.board-action {
+				padding-top: 0px;
+			}
+			.board-action-right {
+				padding-right: 3px;
+			}
+			.board-action i {
+				padding: 0px;
+			}
+			
+			#opening-modal .modal-body {
+				height: 350px;
+			}
 		
 		title Cabana Chess
 	body
-		nav.navbar.navbar-inverse(style="background-color: #ddd; border: 0px;")
-			div.container-fluid(style="margin-left: 10px;")
-				div.navbar-header
-					a.navbar-brand(href="/") Cabana
-				div.collapse.navbar-collapse
-					ul.nav.navbar-nav
-						li
-							a.btn#opening-button(data-toggle="modal", href="#opening-modal") Opening
-						li
-							a.btn(data-toggle="modal", href="#tutorial-modal") Tutorial
-		div.row(style="padding-left: 25px; width: 960px;")
-			div.col-md-8
-				div#board(style="width: 600px;")
-			div.col-md-4
-				div.well#move-table-container(style="height: 596px; min-height: 596px; margin: 0px; overflow-y: scroll;")
-					table.table.table-striped#move-table(style="background-color: #eee; margin: 0px;")
-		table(style="margin-left: 25px; width: 600px; min-height: 40px;")
-			tr
-				td(style="width: 500px;")
-					h4#opening-name
-				td(style="width: 150px;")
-					a.btn.pull-right#flip-board-button(data-toggle="tooltip", title="Flip Board", style="padding-top: 0px; padding-right: 3px;")
-						i.glyphicon.glyphicon-retweet.btn-lg(style="padding: 0px;")
-					a.btn.pull-right#replay-line-button(data-toggle="tooltip", title="Replay Line", style="padding-top: 0px;")
-						i.glyphicon.glyphicon-repeat.btn-lg(style="padding: 0px;")
-					a.btn.pull-right#best-move-button(data-toggle="tooltip", title="Best Move", style="padding-top: 0px;")
-						i.glyphicon.glyphicon-eye-open.btn-lg(style="padding: 0px;")
+		nav.navbar.navbar-inverse
+			div.navbar-inner
+				div.container-fluid
+					div.navbar-header
+						a.navbar-brand(href="/") Cabana
+					div.collapse.navbar-collapse
+						ul.nav.navbar-nav
+							li
+								a.btn#opening-button(data-toggle="modal", href="#opening-modal") Opening
+							li
+								a.btn(data-toggle="modal", href="#tutorial-modal") Tutorial
+		div.center-block.fullwidth
+			div.row.fullwidth
+				div.col-md-8
+					div.boardwidth#board
+				div.col-md-4
+					div.well#move-table-container
+						table.table.table-striped#move-table
+			table.boardwidth
+				tr
+					td
+						h4#opening-name
+					td
+						a.btn.pull-right.board-action#flip-board-button.board-action-right(data-toggle="tooltip", title="Flip Board")
+							i.glyphicon.glyphicon-retweet.btn-lg
+						a.btn.pull-right.board-action#replay-line-button(data-toggle="tooltip", title="Replay Line")
+							i.glyphicon.glyphicon-repeat.btn-lg
+						a.btn.pull-right.board-action#best-move-button(data-toggle="tooltip", title="Best Move")
+							i.glyphicon.glyphicon-eye-open.btn-lg
 						
 		div.modal.fade#opening-modal(role="dialog", aria-hidden="true")
 			div.modal-dialog
@@ -52,7 +117,7 @@ html
 					div.modal-header
 						button.close(type="button", data-dismiss="modal", aria-hidden="true") &times;
 						h4.modal-title Choose an Opening ...
-					div.modal-body(style="height: 350px;")
+					div.modal-body
 						input#opening-selector(style="width: 100%;")
 					div.modal-footer
 						button.btn.btn-default.pull-left(type="button", data-dismiss="modal") Cancel
