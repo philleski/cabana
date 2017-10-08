@@ -12,6 +12,8 @@ Next download the opening name PGN file from here: http://www.chessfiles.com/dow
 
 Copy the file ecoe.pgn to the project directory and run `prep/build_openings.py`. If successful it should generate an openings.json file.
 
+Finally, run `prep/logo.py` to create the logo and favicon.
+
 ## Running
 
 Install node modules: `npm install`
