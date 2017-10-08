@@ -51,7 +51,7 @@ html
 				margin: 0px;
 			}
 			
-			nav.navbar.navbar-inverse {
+			.navbar.navbar-inverse {
 				background-color: #ddd;
 				border: 0px;
 			}
@@ -63,6 +63,10 @@ html
 			.navbar-brand {
 				margin-left: 10px;
 				padding-left: 0px;
+				margin-top: -5px;
+			}
+			.navbar-collapse li a {
+				margin-top: -1px;
 			}
 			
 			.board-action {
@@ -85,7 +89,8 @@ html
 			div.navbar-inner
 				div.container-fluid
 					div.navbar-header
-						a.navbar-brand(href="/") Cabana
+						a.navbar-brand(href="/")
+							img(src="/img/logo.png", width="30", height="30")
 					div.collapse.navbar-collapse
 						ul.nav.navbar-nav
 							li
