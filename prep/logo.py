@@ -79,6 +79,6 @@ for x in range(SIZE):
 	for y in range(PLANK_WIDTH):
 		image.putpixel((x, y), COLOR_WOOD)
 
-image.save('favicon.ico')
+image.save('public/favicon.ico')
 image.save('public/img/logo.png')
 

@@ -6,8 +6,8 @@ var app = express();
 
 app.set('views', './views');
 app.set('view engine', 'pug');
+app.use(expressFavicon('./public/favicon.ico'));
 app.use(express.static('./public'));
-app.use(expressFavicon('favicon.ico'))
 
 fs.readFile('./games/metadata.txt', {encoding: 'utf-8'}, function(err, results) {
 	if(err) {
