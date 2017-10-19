@@ -139,6 +139,8 @@ fs.readFile('./games/metadata.txt', {encoding: 'utf-8'}, function(err, results) 
 			}
 		};
 		
+		
+		
 		app.get('/next_move/', function(req, res) {
 			getNextMoves('', function(err, results) {
 				if(err) {

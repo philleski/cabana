@@ -413,9 +413,9 @@ html
 					} else {
 						// Play more mainline as the opening progresses.
 						if(chess.history().length - currentOpening.moves.length > 1) {
-							nextMoves = nextMoves.slice(0, 3);
+							nextMoves = nextMoves.slice(0, 5);
 						}
-						if(chess.history().length - currentOpening.moves.length > 7) {
+						if(chess.history().length - currentOpening.moves.length > 10) {
 							nextMoves = [nextMoves[0]];
 						}
 						var totalCount = 0;
